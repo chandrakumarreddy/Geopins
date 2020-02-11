@@ -13,9 +13,9 @@ const PinsSchema = new mongoose.Schema(
         text: { type: String },
         createdAt: {
           type: Date,
-          default: Date.now,
-          author: { type: mongoose.Schema.ObjectId, ref: "User" }
-        }
+          default: Date.now
+        },
+        author: { type: mongoose.Schema.ObjectId, ref: "User" }
       }
     ]
   },

@@ -5,23 +5,26 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import context from "../../context";
 import { ME_QUERY } from "../../graphql/queries";
+import { BASE_URL } from "../../client";
 
 const Login = ({ classes }) => {
   const { dispatch } = useContext(context);
   const success = async googleUser => {
     try {
       const { id_token } = googleUser.getAuthResponse();
-      const client = new GraphQLClient("http://localhost:4000/graphql", {
+      const client = new GraphQLClient(BASE_URL, {
         headers: { Authorization: id_token }
       });
       const { me } = await client.request(ME_QUERY);
       dispatch({ type: "LOGIN_USER", payload: me });
+      dispatch({ type: "LOGGED_IN", payload: true });
     } catch (error) {
       failure(error);
     }
   };
   const failure = err => {
     console.log(`google auth error ${err.message}`);
+    dispatch({ type: "LOGGED_IN", payload: false });
   };
   return (
     <div className={classes.root}>
@@ -34,6 +37,7 @@ const Login = ({ classes }) => {
       </Typography>
       <GoogleLogin
         clientId={process.env.REACT_APP_OAUTH_CLIENT_ID}
+        buttonText={"Sign in with Google"}
         onSuccess={success}
         onFailure={failure}
         isSignedIn={true}
